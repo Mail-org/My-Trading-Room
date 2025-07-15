@@ -2,7 +2,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Live-Trading Room</title>
+  <title>Blockchain Auto-Trading Room</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body { font-family: Arial, sans-serif; background-color: #f1f1f1; margin: 0; padding: 0; }
@@ -12,12 +12,11 @@
     .form-group { margin-bottom: 15px; }
     label { display: block; margin-bottom: 5px; }
     input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
-    .btn { background-color: #25D366; color: white; padding: 10px; border: none; width: 100%; border-radius: 5px; font-size: 16px; cursor: pointer; }
+    .btn, .nav-btn { background-color: #25D366; color: white; padding: 10px; border: none; width: 100%; border-radius: 5px; font-size: 16px; cursor: pointer; margin-bottom: 10px; }
     .hidden { display: none; }
     .chat-box { height: 600px; overflow-y: auto; }
     .message { margin-bottom: 15px; }
     .message.admin { background-color: #e1ffe1; border-left: 4px solid #25D366; padding: 10px; border-radius: 5px; }
-    .message.user { background-color: #f0f0f0; padding: 10px; border-radius: 5px; }
     .asset-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
     .asset { background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 5px; text-align: center; cursor: pointer; width: calc(33.33% - 10px); }
     .asset img { height: 30px; width: 30px; }
@@ -29,87 +28,114 @@
   </style>
 </head>
 <body>
-  <header>
-    </h1>Live-Trading Room</h1>
-    <div><i class="fab fa-whatsapp"></i></div>
-  </header> 
-  <!-- Page 1: Registration/Login -->  
-  <div class="container" id="registerPage">
-    <h2>Join the Trading Room</h2>
-    <div class="form-group"><label>Full Name</label><input type="text" placeholder="Enter full name"></div>
-    <div class="form-group"><label>Username</label><input type="text" placeholder="Enter username"></div>
-    <div class="form-group"><label>Email</label><input type="email" placeholder="Enter email"></div>
-    <div class="form-group"><label>Country of Residence</label><input type="text" id="country" readonly></div>
-    <div class="form-group"><label>Password</label><input type="password" placeholder="Enter password"></div>
-    <div class="form-group"><label>Confirm Password</label><input type="password" placeholder="Confirm password"></div>
-    <button class="btn" onclick="validateAndEnterRoom()">Join Room</button>
-  </div> 
-  <!-- Page 2: Trading Room Channel -->
+<header>
+  <h1>Blockchain Auto-Trading Room</h1>
+  <div><i class="fab fa-whatsapp"></i></div>
+</header>
+  <!-- Navigation Page -->
+  <div class="container" id="navigationPage">
+  <button class="nav-btn" onclick="showRegisterPage()">Join Live Trading Room</button>
+  <button class="nav-btn" onclick="showLoginPage()">Login to Live Trading Account</button>
+</div>
+  <!-- Registration Page -->
+  <div class="container hidden" id="registerPage">
+  <h2>Join the Trading Room</h2>
+  <div class="form-group"><label>Full Name</label><input type="text" placeholder="Enter full name"></div>
+  <div class="form-group"><label>Username</label><input type="text" placeholder="Enter username"></div>
+  <div class="form-group"><label>Email</label><input type="email" placeholder="Enter email"></div>
+  <div class="form-group"><label>Country of Residence</label><input type="text" id="country" readonly></div>
+  <div class="form-group"><label>Password</label><input type="password" placeholder="Enter password"></div>
+  <div class="form-group"><label>Confirm Password</label><input type="password" placeholder="Confirm password"></div>
+  <button class="btn" onclick="validateAndEnterRoom()">Join Room</button>
+</div>
+  <!-- Login Page -->
+  <div class="container hidden" id="loginPage">
+  <h2>Login to Trading Room</h2>
+  <div class="form-group"><label>Email</label><input type="email" id="loginEmail"></div>
+  <div class="form-group"><label>Password</label><input type="password" id="loginPassword"></div>
+  <button class="btn" onclick="loginUser()">Login</button>
+</div>
+  <!-- Trading Room Page -->
   <div class="container hidden" id="tradingRoom">
-    <div class="chat-box" id="chatBox">
-      <div class="message admin">
-        <strong>Admin:</strong> Welcome to the Trading Room 🚀
-        <div class="asset-bar">
-          <div class="asset" onclick="openAssetChart('bitcoin')"><img src="https://assets.coingecko.com/coins/images/1/thumb/bitcoin.png" alt="BTC"><div>BTC</div></div>
-          <div class="asset" onclick="openAssetChart('ethereum')"><img src="https://assets.coingecko.com/coins/images/279/thumb/ethereum.png" alt="ETH"><div>ETH</div></div>
-          <div class="asset" onclick="openAssetChart('binancecoin')"><img src="https://assets.coingecko.com/coins/images/825/thumb/binance-coin-logo.png" alt="BNB"><div>BNB</div></div>
-        </div>
-        <a class="action-btn" onclick="showTradingAccountPage()">Join Live Trading</a>
+  <div class="chat-box" id="chatBox">
+    <div class="message admin">
+      <strong>Admin:</strong> Welcome to the Trading Room 🚀
+      <div class="asset-bar">
+        <div class="asset" onclick="openAssetChart('bitcoin')"><img src="https://assets.coingecko.com/coins/images/1/thumb/bitcoin.png" alt="BTC"><div>BTC</div></div>
+        <div class="asset" onclick="openAssetChart('ethereum')"><img src="https://assets.coingecko.com/coins/images/279/thumb/ethereum.png" alt="ETH"><div>ETH</div></div>
+        <div class="asset" onclick="openAssetChart('binancecoin')"><img src="https://assets.coingecko.com/coins/images/825/thumb/binance-coin-logo.png" alt="BNB"><div>BNB</div></div>
       </div>
-      <iframe class="chart" id="priceChart" src="https://www.coingecko.com/en/coins/bitcoin"></iframe>
-      <div class="support-chat">
-        <button onclick="openWhatsAppChat()"><i class="fab fa-whatsapp"></i> Chat with Admin</button>
-      </div>
+      <a class="action-btn" href="#">Join Live Trading</a>
     </div>
-    <div id="popContainer"></div>
-  </div> 
-  <!-- Page 3: Trading Account Registration --> 
-  <div class="container hidden" id="accountPage">
-    <h2>Trading Account Registration</h2>
-    <div class="form-group"><label>Phone or Email</label><input type="text" placeholder="Enter phone or email"></div>
-    <div class="form-group"><label>Password</label><input type="password" placeholder="Enter password"></div>
-    <button class="btn">Login to Trade</button>
-  </div>  <footer>
-    &copy; 2015 Blockchain Auto-Trading Room | Powered by CoinGecko API & TradingView
-  </footer>  <script>
-    // Detect country
-    fetch("https://ipapi.co/json")
-      .then(res => res.json())
-      .then(data => document.getElementById("country").value = data.country_name);
+    <iframe class="chart" id="priceChart" src="https://www.coingecko.com/en/coins/bitcoin"></iframe>
+    <div class="support-chat">
+      <button onclick="openWhatsAppChat()"><i class="fab fa-whatsapp"></i> Chat with Admin</button>
+    </div>
+  </div>
+  <div id="popContainer"></div>
+</div><footer>
+  &copy; 2025 Blockchain Auto-Trading Room | Powered by CoinGecko API & TradingView
+</footer><script>
+  fetch("https://ipapi.co/json")
+    .then(res => res.json())
+    .then(data => {
+      if (data.country_name && data.country_name !== "Nigeria") {
+        document.getElementById("country").value = data.country_name;
+      } else {
+        document.getElementById("country").value = "Canada";
+      }
+    });
 
-    function validateAndEnterRoom() {
-      document.getElementById("registerPage").classList.add("hidden");
-      setTimeout(() => {
-        document.getElementById("tradingRoom").classList.remove("hidden");
-      }, 1500);
-    }
+  function showRegisterPage() {
+    document.getElementById("navigationPage").classList.add("hidden");
+    document.getElementById("registerPage").classList.remove("hidden");
+  }
 
-    function showTradingAccountPage() {
-      document.getElementById("tradingRoom").classList.add("hidden");
-      document.getElementById("accountPage").classList.remove("hidden");
-    }
+  function showLoginPage() {
+    document.getElementById("navigationPage").classList.add("hidden");
+    document.getElementById("loginPage").classList.remove("hidden");
+  }
 
-    function openAssetChart(assetId) {
-      document.getElementById("priceChart").src = `https://www.coingecko.com/en/coins/${assetId}`;
-    }
+  function validateAndEnterRoom() {
+    document.getElementById("registerPage").classList.add("hidden");
+    setTimeout(() => {
+      document.getElementById("tradingRoom").classList.remove("hidden");
+    }, 1500);
+  }
 
-    function openWhatsAppChat() {
-      window.open("https://wa.me/12096635424", "_blank");
-    }
+  function loginUser() {
+    document.getElementById("loginPage").classList.add("hidden");
+    setTimeout(() => {
+      document.getElementById("tradingRoom").classList.remove("hidden");
+    }, 1500);
+  }
 
-    const popups = [
-      "Someone from Canada just joined the room",
-      "Mark Donald just closed a spot trade",
-      "Lucia from Brazil deposited $900",
-      "Tanaka from Japan withdrew $1,200 profit",
-      "someone from India joined the live session"
-      "someone from UK joined the premium"
-    ];
-    setInterval(() => {
-      const msg = document.createElement("div");
-      msg.className = "pop-message";
-      msg.innerText = popups[Math.floor(Math.random() * popups.length)];
-      document.getElementById("popContainer").appendChild(msg);
-    }, 75000);
-  </script></body>
+  function openAssetChart(assetId) {
+    document.getElementById("priceChart").src = `https://www.coingecko.com/en/coins/${assetId}`;
+  }
+
+  function openWhatsAppChat() {
+    window.open("https://wa.me/12096635424", "_blank");
+  }
+
+  const popups = [
+    "Someone from Canada just joined the room",
+    "Lucia from Brazil deposited $900",
+    "Tanaka from Japan withdrew $1,200 profit",
+    "Mark Donald just closed a spot trade",
+    "Maria from Germany joined the live session",
+    "Chen from Singapore deposited $3,000",
+    "Igor from Russia joined the session",
+    "Emma from UK just made a withdrawal of $800",
+    "Alex from France just started trading",
+    "Dmitri from Poland made $2,200 profit"
+  ];
+
+  setInterval(() => {
+    const msg = document.createElement("div");
+    msg.className = "pop-message";
+    msg.innerText = popups[Math.floor(Math.random() * popups.length)];
+    document.getElementById("popContainer").prepend(msg);
+  }, 75000);
+</script></body>
 </html>

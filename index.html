@@ -1,173 +1,171 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Blockchain Auto-Trading Room</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { font-family: Arial, sans-serif; background: #f1f1f1; margin: 0; padding: 0; }
-    header { background: #25D366; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+    body { font-family: Arial, sans-serif; background-color: #0d1117; color: #c9d1d9; margin: 0; padding: 0; }
+    header { background-color: #1c2128; color: #58a6ff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
     header h1 { margin: 0; font-size: 20px; }
-    #backButton { display: none; cursor: pointer; padding: 10px 20px; font-size: 26px; color: #25D366; font-weight: bold; }
-    .container { max-width: 700px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    .nav-btn, .btn { background: #25D366; color: #fff; width: 100%; padding: 10px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 10px; }
-    .hidden { display: none; }
+    .container { max-width: 700px; margin: 20px auto; background-color: #161b22; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(88,166,255,0.2); }
     .form-group { margin-bottom: 15px; }
-    label { display: block; margin-bottom: 5px; }
-    input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+    label { display: block; margin-bottom: 5px; color: #8b949e; }
+    input, select { width: 100%; padding: 10px; border: 1px solid #30363d; border-radius: 5px; background: #0d1117; color: #c9d1d9; }
+    .btn, .nav-btn { background-color: #238636; color: white; padding: 10px; border: none; width: 100%; border-radius: 5px; font-size: 16px; cursor: pointer; margin-bottom: 10px; }
+    .hidden { display: none; }
     .chat-box { height: 600px; overflow-y: auto; }
-    .message.admin { background: #e1ffe1; border-left: 4px solid #25D366; padding: 10px; border-radius: 5px; margin-bottom: 15px; }
+    .message { margin-bottom: 15px; }
+    .message.admin { background-color: #161b22; border-left: 4px solid #238636; padding: 10px; border-radius: 5px; }
     .asset-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
-    .asset { background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 5px; text-align: center; cursor: pointer; width: calc(33.33% - 10px); }
-    .asset img { width: 30px; height: 30px; }
-    .action-btn { display: inline-block; background: #25D366; color: #fff; text-decoration: none; padding: 10px 15px; border-radius: 5px; font-size: 14px; margin-top: 10px; }
+    .asset { background: #0d1117; padding: 10px; border: 1px solid #30363d; border-radius: 5px; text-align: center; cursor: pointer; width: calc(33.33% - 10px); }
+    .asset img { height: 30px; width: 30px; }
+    .action-btn { display: inline-block; background-color: #238636; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; margin-top: 10px; font-size: 14px; }
+    .pop-message { background-color: #1c2128; padding: 10px; border-left: 4px solid #58a6ff; margin: 10px 0; border-radius: 5px; font-size: 14px; color: #c9d1d9; }
     iframe.chart { width: 100%; height: 400px; border: none; margin-top: 20px; }
     .support-chat { text-align: center; margin-top: 20px; }
-    .support-chat button { background: #25D366; color: #fff; padding: 10px 20px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; }
-    .pop-message { background: #dff0ff; padding: 10px; border-left: 4px solid #25D366; margin: 10px 0; border-radius: 5px; font-size: 14px; }
-    .media-card { width: 30%; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    .media-card img, .media-card video { width: 100%; display: block; }
-    .media-card .caption { padding: 10px; font-size: 14px; font-weight: bold; }
-    #mediaWall { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px; }
+    .support-chat button { background-color: #238636; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; cursor: pointer; }
+    .success-gallery { margin-top: 30px; }
+    .media-card { background: #0d1117; padding: 10px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #30363d; }
+    .media-card h4 { margin: 5px 0; }
+    .back-btn { background: none; border: none; font-size: 20px; color: #58a6ff; cursor: pointer; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Blockchain Auto-Trading Room</h1>
-    <div><i class="fab fa-whatsapp"></i></div>
-  </header>
-  <div id="backButton" onclick="goBack()">&lt;</div>
-
-  <!-- Navigation -->
-  <div class="container" id="navigationPage">
-    <button class="nav-btn" onclick="showRegisterPage()">Join Live Trading Room</button>
-    <button class="nav-btn" onclick="showLoginPage()">Login to Live Trading Account</button>
-  </div>
-
-  <!-- Register -->
-  <div class="container hidden" id="registerPage">
-    <h2>Join the Trading Room</h2>
-    <div class="form-group"><label>Full Name</label><input type="text"/></div>
-    <div class="form-group"><label>Username</label><input type="text"/></div>
-    <div class="form-group"><label>Email</label><input type="email"/></div>
-    <div class="form-group"><label>Country</label><input type="text" id="country" readonly/></div>
-    <div class="form-group"><label>Password</label><input type="password"/></div>
-    <div class="form-group"><label>Confirm Password</label><input type="password"/></div>
-    <button class="btn" onclick="validateAndEnterRoom()">Join Room</button>
-  </div>
-
-  <!-- Login -->
-  <div class="container hidden" id="loginPage">
-    <h2>Login to Trading Room</h2>
-    <div class="form-group"><label>Email</label><input type="email" id="loginEmail"/></div>
-    <div class="form-group"><label>Password</label><input type="password" id="loginPassword"/></div>
-    <button class="btn" onclick="loginUser()">Login</button>
-  </div>
-
-  <!-- Trading Room -->
-  <div class="container hidden" id="tradingRoom">
-    <div class="chat-box" id="chatBox">
-      <div class="message admin">
-        <strong>Admin:</strong> Welcome to the Trading Room 🚀
-        <div class="asset-bar">
-          <div class="asset" onclick="openAssetChart('bitcoin')"><img src="https://assets.coingecko.com/coins/images/1/thumb/bitcoin.png"><div>BTC</div></div>
-          <div class="asset" onclick="openAssetChart('ethereum')"><img src="https://assets.coingecko.com/coins/images/279/thumb/ethereum.png"><div>ETH</div></div>
-          <div class="asset" onclick="openAssetChart('binancecoin')"><img src="https://assets.coingecko.com/coins/images/825/thumb/binance-coin-logo.png"><div>BNB</div></div>
-        </div>
-        <a class="action-btn" href="#">Join Live Trading</a>
+<header>
+  <button class="back-btn" onclick="goBack()">&lt;</button>
+  <h1>Blockchain Auto-Trading Room</h1>
+  <div><i class="fab fa-whatsapp"></i></div>
+</header>
+<div class="container" id="navigationPage">
+  <button class="nav-btn" onclick="showRegisterPage()">Join Live Trading Room</button>
+  <button class="nav-btn" onclick="showLoginPage()">Login to Live Trading Account</button>
+  <button class="nav-btn" onclick="showBalancePage()">Check Wallet Balance</button>
+  <button class="nav-btn" onclick="showAdminUpload()">Admin Upload</button>
+</div>
+<div class="container hidden" id="registerPage">
+  <h2>Join the Trading Room</h2>
+  <div class="form-group"><label>Full Name</label><input type="text"></div>
+  <div class="form-group"><label>Username</label><input type="text"></div>
+  <div class="form-group"><label>Email</label><input type="email"></div>
+  <div class="form-group"><label>Country of Residence</label><input type="text" id="country" readonly></div>
+  <div class="form-group"><label>Password</label><input type="password"></div>
+  <div class="form-group"><label>Confirm Password</label><input type="password"></div>
+  <button class="btn" onclick="validateAndEnterRoom()">Join Room</button>
+</div>
+<div class="container hidden" id="loginPage">
+  <h2>Login to Trading Room</h2>
+  <div class="form-group"><label>Email</label><input type="email" id="loginEmail"></div>
+  <div class="form-group"><label>Password</label><input type="password" id="loginPassword"></div>
+  <button class="btn" onclick="loginUser()">Login</button>
+</div>
+<div class="container hidden" id="balancePage">
+  <h2>Check BNB Balance</h2>
+  <div class="form-group"><label>Wallet Address</label><input id="walletInput" placeholder="Enter BSC address"></div>
+  <button class="btn" onclick="fetchWalletBalance()">Check Balance</button>
+  <p id="balanceResult"></p>
+</div>
+<div class="container hidden" id="adminPage">
+  <h2>Admin Upload Media</h2>
+  <div class="form-group"><label>Name</label><input type="text" id="uploadName"></div>
+  <div class="form-group"><label>Caption</label><input type="text" id="uploadCaption"></div>
+  <div class="form-group"><label>Media File</label><input type="file" id="uploadFile"></div>
+  <div class="form-group"><label>Admin Token</label><input type="password" id="uploadToken"></div>
+  <button class="btn" onclick="uploadMedia()">Upload</button>
+  <p id="uploadStatus"></p>
+</div>
+<div class="container hidden" id="tradingRoom">
+  <div class="chat-box" id="chatBox">
+    <div class="message admin">
+      <strong>Admin:</strong> Welcome to the Trading Room 🚀
+      <div class="asset-bar">
+        <div class="asset" onclick="openAssetChart('bitcoin')"><img src="https://assets.coingecko.com/coins/images/1/thumb/bitcoin.png"><div>BTC</div></div>
+        <div class="asset" onclick="openAssetChart('ethereum')"><img src="https://assets.coingecko.com/coins/images/279/thumb/ethereum.png"><div>ETH</div></div>
+        <div class="asset" onclick="openAssetChart('binancecoin')"><img src="https://assets.coingecko.com/coins/images/825/thumb/binance-coin-logo.png"><div>BNB</div></div>
       </div>
-      <iframe class="chart" id="priceChart" src="https://www.coingecko.com/en/coins/bitcoin"></iframe>
-      <div class="support-chat"><button onclick="openWhatsAppChat()"><i class="fab fa-whatsapp"></i> Chat with Admin</button></div>
+      <a class="action-btn" href="#">Join Live Trading</a>
     </div>
-    <div id="popContainer"></div>
-    <div id="successStories"></div>
-
-    <h3 style="margin-top:30px;">🚀 Member Success Stories</h3>
-    <div id="mediaWall"></div>
+    <iframe class="chart" id="priceChart" src="https://www.coingecko.com/en/coins/bitcoin"></iframe>
+    <div class="support-chat">
+      <button onclick="openWhatsAppChat()"><i class="fab fa-whatsapp"></i> Chat with Admin</button>
+    </div>
   </div>
-
-  <footer>; Blockchain Auto-Trading Room</footer>
-
-  <script>
-    const navigationStack = [];
-
-    function showPage(pageId) {
-      ['navigationPage','registerPage','loginPage','tradingRoom'].forEach(id => document.getElementById(id).classList.add('hidden'));
-      const curr = document.querySelector('.container:not(.hidden)');
-      if (curr) navigationStack.push(curr.id);
-      document.getElementById(pageId).classList.remove('hidden');
-      document.getElementById('backButton').style.display = pageId !== 'navigationPage' ? 'block' : 'none';
-    }
-    function goBack() { if (navigationStack.length) showPage(navigationStack.pop()); }
-    function showRegisterPage(){ showPage('registerPage'); }
-    function showLoginPage(){ showPage('loginPage'); }
-    function validateAndEnterRoom(){ showPage('tradingRoom'); }
-    function loginUser(){ showPage('tradingRoom'); }
-    function openAssetChart(id){ document.getElementById('priceChart').src = `https://www.coingecko.com/en/coins/${id}`; }
-    function openWhatsAppChat(){ window.open('https://wa.me/12096635424','_blank'); }
-
-    // Set country automatically
-    fetch("https://ipapi.co/json").then(r=>r.json()).then(d=>{ document.getElementById('country').value = d.country_name || 'Canada'; });
-
-    const popups = [
-      "Someone from Canada just joined the room",
-      "Lucia from Brazil deposited $900",
-      "Tanaka from Japan withdrew $1,200 profit",
-      "Mark Donald just closed a spot trade",
-      "Maria from Germany joined the live session"
-    ];
-    setInterval(()=>{
-      const msg = document.createElement('div');
-      msg.className = 'pop-message';
-      msg.innerText = popups[Math.floor(Math.random()*popups.length)];
-      document.getElementById('popContainer').prepend(msg);
-    }, 75000);
-
-    const successStories = [
-      "✅ Anna from UK earned $1,850 today.",
-      "✅ Sandra from UAE earned $980 in 24h.",
-      "✅ Boris from Russia hit $2,050.",
-      "✅ Carol from India completed 3 trades!",
-      "✅ Mikhail from Ukraine made $1,500 profit."
-    ];
-    let storyIndex = 0;
-    function updateSuccessStory(){
-      document.getElementById('successStories').innerHTML = `<div class="pop-message">${successStories[storyIndex]}</div>`;
-      storyIndex = (storyIndex+1)%successStories.length;
-    }
-
-    const mediaItems = [
-      { name: "Sasha from Russia", type: "video", url: "media/vid1.mp4", caption: "Success after 3 weeks" },
-      { name: "Lena from Germany", type: "image", url: "media/img2.jpg", caption: "2nd payout confirmed" },
-      { name: "Ahmed from UAE", type: "video", url: "media/vid2.mp4", caption: "Earned $1,500 on Binance bot" },
-      { name: "Grace from UK", type: "image", url: "media/img3.jpg", caption: "Withdrawal proof shared" }
-    ];
-
-    function updateMediaWall() {
-      const wall = document.getElementById('mediaWall');
-      wall.innerHTML = '';
-      const usedNames = new Set();
-      const shuffled = [...mediaItems].sort(() => 0.5 - Math.random());
-      for (const story of shuffled) {
-        if (usedNames.has(story.name)) continue;
-        usedNames.add(story.name);
-        const card = document.createElement('div');
-        card.className = 'media-card';
-        card.innerHTML = story.type === 'video'
-          ? `<video controls autoplay muted loop><source src="${story.url}" type="video/mp4"></video><div class="caption">${story.name}: ${story.caption}</div>`
-          : `<img src="${story.url}" alt="${story.name}"/><div class="caption">${story.name}: ${story.caption}</div>`;
-        wall.appendChild(card);
-        if (wall.children.length >= 4) break;
-      }
-    }
-
-    window.onload = () => {
-      updateSuccessStory();
-      updateMediaWall();
-      setInterval(updateSuccessStory, 300000);
-      setInterval(updateMediaWall, 300000);
-    };
-  </script>
+  <div id="popContainer"></div>
+  <div class="success-gallery" id="successGallery"></div>
+</div>
+<footer>
+  <p style="text-align:center; color:#58a6ff;"> Blockchain Auto-Trading Room | Powered by CoinGecko API & TradingView</p>
+</footer>
+<script>
+function goBack() { window.history.back(); }
+function showRegisterPage() { hideAll(); document.getElementById("registerPage").classList.remove("hidden"); }
+function showLoginPage() { hideAll(); document.getElementById("loginPage").classList.remove("hidden"); }
+function showBalancePage() { hideAll(); document.getElementById("balancePage").classList.remove("hidden"); }
+function showAdminUpload() { hideAll(); document.getElementById("adminPage").classList.remove("hidden"); }
+function validateAndEnterRoom() { hideAll(); document.getElementById("tradingRoom").classList.remove("hidden"); }
+function loginUser() { hideAll(); document.getElementById("tradingRoom").classList.remove("hidden"); }
+function openAssetChart(assetId) { document.getElementById("priceChart").src = `https://www.coingecko.com/en/coins/${assetId}`; }
+function openWhatsAppChat() { window.open("https://wa.me/12096635424", "_blank"); }
+function fetchWalletBalance() {
+  const addr = document.getElementById("walletInput").value;
+  if (!addr) return alert("Enter a wallet address.");
+  fetch(`http://localhost:3000/balance?address=${addr}`)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("balanceResult").innerText = `Balance: ${parseFloat(data.balance).toFixed(5)} BNB`;
+    }).catch(() => {
+      document.getElementById("balanceResult").innerText = "Failed to fetch balance.";
+    });
+}
+function uploadMedia() {
+  const name = document.getElementById("uploadName").value;
+  const caption = document.getElementById("uploadCaption").value;
+  const file = document.getElementById("uploadFile").files[0];
+  const token = document.getElementById("uploadToken").value;
+  if (!name || !caption || !file || !token) return alert("All fields are required.");
+  const formData = new FormData();
+  formData.append("name", name);
+  formData.append("caption", caption);
+  formData.append("media", file);
+  fetch("http://localhost:3000/admin/upload", {
+    method: "POST",
+    headers: { "x-admin-token": token },
+    body: formData
+  })
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("uploadStatus").innerText = data.message || "Upload complete.";
+    fetchSuccessStories();
+  })
+  .catch(() => {
+    document.getElementById("uploadStatus").innerText = "Upload failed.";
+  });
+}
+function fetchSuccessStories() {
+  fetch("http://localhost:3000/media-data")
+    .then(res => res.json())
+    .then(data => {
+      const gallery = document.getElementById("successGallery");
+      gallery.innerHTML = "";
+      data.media.forEach(m => {
+        const card = document.createElement("div");
+        card.className = "media-card";
+        const content = m.type === 'image' ? `<img src="${m.url}" style="width:100%">` : `<video src="${m.url}" controls style="width:100%"></video>`;
+        card.innerHTML = `${content}<h4>${m.name}</h4><p>${m.caption}</p>`;
+        gallery.appendChild(card);
+      });
+    });
+}
+function hideAll() {
+  ["navigationPage", "registerPage", "loginPage", "tradingRoom", "balancePage", "adminPage"].forEach(id => {
+    document.getElementById(id).classList.add("hidden");
+  });
+}
+setInterval(fetchSuccessStories, 300000);
+fetchSuccessStories();
+fetch("https://ipapi.co/json").then(res => res.json()).then(data => {
+  document.getElementById("country").value = data.country_name || "Canada";
+});
+</script>
 </body>
 </html>

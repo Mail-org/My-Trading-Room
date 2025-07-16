@@ -14,17 +14,12 @@
     input, select { width: 100%; padding: 10px; border: 1px solid #30363d; border-radius: 5px; background: #0d1117; color: #c9d1d9; }
     .btn, .nav-btn { background-color: #238636; color: white; padding: 10px; border: none; width: 100%; border-radius: 5px; font-size: 16px; cursor: pointer; margin-bottom: 10px; }
     .hidden { display: none; }
-    .chat-box { height: 600px; overflow-y: auto; }
-    .message { margin-bottom: 15px; }
-    .message.admin { background-color: #161b22; border-left: 4px solid #238636; padding: 10px; border-radius: 5px; }
+    .chat-box { height: 400px; overflow-y: auto; }
+    .message.admin { background-color: #161b22; border-left: 4px solid #238636; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
     .asset-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
     .asset { background: #0d1117; padding: 10px; border: 1px solid #30363d; border-radius: 5px; text-align: center; cursor: pointer; width: calc(33.33% - 10px); }
     .asset img { height: 30px; width: 30px; }
-    .action-btn { display: inline-block; background-color: #238636; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; margin-top: 10px; font-size: 14px; }
-    .pop-message { background-color: #1c2128; padding: 10px; border-left: 4px solid #58a6ff; margin: 10px 0; border-radius: 5px; font-size: 14px; color: #c9d1d9; }
-    iframe.chart { width: 100%; height: 400px; border: none; margin-top: 20px; }
-    .support-chat { text-align: center; margin-top: 20px; }
-    .support-chat button { background-color: #238636; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; cursor: pointer; }
+    .action-btn, .back-btn { display: inline-block; background-color: #238636; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; margin-top: 10px; }
     .success-gallery { margin-top: 30px; }
     .media-card { background: #0d1117; padding: 10px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #30363d; }
     .media-card h4 { margin: 5px 0; }
@@ -35,15 +30,10 @@
 <header>
   <button class="back-btn" onclick="goBack()">&lt;</button>
   <h1>Blockchain Auto-Trading Room</h1>
-  <div><i class="fab fa-whatsapp"></i></div>
-</header>
-<div class="container" id="navigationPage">
+</header><div class="container" id="navigationPage">
   <button class="nav-btn" onclick="showRegisterPage()">Join Live Trading Room</button>
   <button class="nav-btn" onclick="showLoginPage()">Login to Live Trading Account</button>
-  <button class="nav-btn" onclick="showBalancePage()">Check Wallet Balance</button>
-  <button class="nav-btn" onclick="showAdminUpload()">Admin Upload</button>
-</div>
-<div class="container hidden" id="registerPage">
+</div><div class="container hidden" id="registerPage">
   <h2>Join the Trading Room</h2>
   <div class="form-group"><label>Full Name</label><input type="text"></div>
   <div class="form-group"><label>Username</label><input type="text"></div>
@@ -52,93 +42,118 @@
   <div class="form-group"><label>Password</label><input type="password"></div>
   <div class="form-group"><label>Confirm Password</label><input type="password"></div>
   <button class="btn" onclick="validateAndEnterRoom()">Join Room</button>
-</div>
-<div class="container hidden" id="loginPage">
+</div><div class="container hidden" id="loginPage">
   <h2>Login to Trading Room</h2>
   <div class="form-group"><label>Email</label><input type="email" id="loginEmail"></div>
   <div class="form-group"><label>Password</label><input type="password" id="loginPassword"></div>
   <button class="btn" onclick="loginUser()">Login</button>
-</div>
-<div class="container hidden" id="balancePage">
+</div><div class="container hidden" id="tradingRoom">
+  <div class="chat-box" id="chatBox"></div>
+  <div class="form-group">
+    <label>Admin Phone</label>
+    <input type="text" id="adminPhone" placeholder="Enter admin phone">
+    <label>Admin Passcode</label>
+    <input type="password" id="adminPass" placeholder="Enter admin passcode">
+    <button class="btn" onclick="checkAdminAccess()">Access Admin Profile</button>
+  </div>
+  <div id="adminProfile" class="hidden">
+    <h3>Admin Profile Settings</h3>
+    <button class="btn" onclick="showAdminUpload()">Upload Media</button>
+    <button class="btn" onclick="showBalancePage()">Check Balance</button>
+    <button class="btn" onclick="authorizeUserUpload(true)">Authorize User Upload</button>
+    <button class="btn" onclick="authorizeUserUpload(false)">Disable User Upload</button>
+  </div>
+  <div id="userProfile">
+    <h3>User Profile</h3>
+    <button class="btn" onclick="showBalancePage()">Check Balance</button>
+    <button class="btn hidden" id="userUploadBtn" onclick="showUserUpload()">User Upload</button>
+  </div>
+  <div id="successGallery" class="success-gallery"></div>
+</div><div class="container hidden" id="balancePage">
   <h2>Check BNB Balance</h2>
   <div class="form-group"><label>Wallet Address</label><input id="walletInput" placeholder="Enter BSC address"></div>
   <button class="btn" onclick="fetchWalletBalance()">Check Balance</button>
   <p id="balanceResult"></p>
-</div>
-<div class="container hidden" id="adminPage">
-  <h2>Admin Upload Media</h2>
-  <div class="form-group"><label>Name</label><input type="text" id="uploadName"></div>
-  <div class="form-group"><label>Caption</label><input type="text" id="uploadCaption"></div>
-  <div class="form-group"><label>Media File</label><input type="file" id="uploadFile"></div>
-  <div class="form-group"><label>Admin Token</label><input type="password" id="uploadToken"></div>
+</div><div class="container hidden" id="adminUploadPage">
+  <h2>Admin Upload</h2>
+  <input type="text" id="uploadName" placeholder="Name">
+  <input type="text" id="uploadCaption" placeholder="Caption">
+  <input type="file" id="uploadFile">
   <button class="btn" onclick="uploadMedia()">Upload</button>
   <p id="uploadStatus"></p>
-</div>
-<div class="container hidden" id="tradingRoom">
-  <div class="chat-box" id="chatBox">
-    <div class="message admin">
-      <strong>Admin:</strong> Welcome to the Trading Room 🚀
-      <div class="asset-bar">
-        <div class="asset" onclick="openAssetChart('bitcoin')"><img src="https://assets.coingecko.com/coins/images/1/thumb/bitcoin.png"><div>BTC</div></div>
-        <div class="asset" onclick="openAssetChart('ethereum')"><img src="https://assets.coingecko.com/coins/images/279/thumb/ethereum.png"><div>ETH</div></div>
-        <div class="asset" onclick="openAssetChart('binancecoin')"><img src="https://assets.coingecko.com/coins/images/825/thumb/binance-coin-logo.png"><div>BNB</div></div>
-      </div>
-      <a class="action-btn" href="#">Join Live Trading</a>
-    </div>
-    <iframe class="chart" id="priceChart" src="https://www.coingecko.com/en/coins/bitcoin"></iframe>
-    <div class="support-chat">
-      <button onclick="openWhatsAppChat()"><i class="fab fa-whatsapp"></i> Chat with Admin</button>
-    </div>
-  </div>
-  <div id="popContainer"></div>
-  <div class="success-gallery" id="successGallery"></div>
-</div>
-<footer>
-  <p style="text-align:center; color:#58a6ff;"> Blockchain Auto-Trading Room | Powered by CoinGecko API & TradingView</p>
-</footer>
-<script>
+</div><div class="container hidden" id="userUploadPage">
+  <h2>User Upload</h2>
+  <input type="text" id="userUploadName" placeholder="Name">
+  <input type="text" id="userUploadCaption" placeholder="Caption">
+  <input type="file" id="userUploadFile">
+  <button class="btn" onclick="uploadUserMedia()">Upload</button>
+  <p id="userUploadStatus"></p>
+</div><script>
+let userUploadAuthorized = false;
 function goBack() { window.history.back(); }
+function hideAll() {
+  ["navigationPage", "registerPage", "loginPage", "tradingRoom", "balancePage", "adminUploadPage", "userUploadPage"]
+    .forEach(id => document.getElementById(id).classList.add("hidden"));
+}
 function showRegisterPage() { hideAll(); document.getElementById("registerPage").classList.remove("hidden"); }
 function showLoginPage() { hideAll(); document.getElementById("loginPage").classList.remove("hidden"); }
+function validateAndEnterRoom() { hideAll(); document.getElementById("tradingRoom").classList.remove("hidden"); fetchSuccessStories(); }
+function loginUser() { hideAll(); document.getElementById("tradingRoom").classList.remove("hidden"); fetchSuccessStories(); }
 function showBalancePage() { hideAll(); document.getElementById("balancePage").classList.remove("hidden"); }
-function showAdminUpload() { hideAll(); document.getElementById("adminPage").classList.remove("hidden"); }
-function validateAndEnterRoom() { hideAll(); document.getElementById("tradingRoom").classList.remove("hidden"); }
-function loginUser() { hideAll(); document.getElementById("tradingRoom").classList.remove("hidden"); }
-function openAssetChart(assetId) { document.getElementById("priceChart").src = `https://www.coingecko.com/en/coins/${assetId}`; }
-function openWhatsAppChat() { window.open("https://wa.me/12096635424", "_blank"); }
+function showAdminUpload() { hideAll(); document.getElementById("adminUploadPage").classList.remove("hidden"); }
+function showUserUpload() { hideAll(); document.getElementById("userUploadPage").classList.remove("hidden"); }
+function checkAdminAccess() {
+  const phone = document.getElementById("adminPhone").value;
+  const pass = document.getElementById("adminPass").value;
+  if (phone === "+1(209) 663-5424" && pass === "Auto-block1xx") {
+    document.getElementById("adminProfile").classList.remove("hidden");
+  } else {
+    alert("Access denied.");
+  }
+}
+function authorizeUserUpload(enable) {
+  userUploadAuthorized = enable;
+  document.getElementById("userUploadBtn").classList.toggle("hidden", !enable);
+}
 function fetchWalletBalance() {
   const addr = document.getElementById("walletInput").value;
-  if (!addr) return alert("Enter a wallet address.");
+  if (!addr) return alert("Enter wallet address");
   fetch(`http://localhost:3000/balance?address=${addr}`)
     .then(res => res.json())
-    .then(data => {
-      document.getElementById("balanceResult").innerText = `Balance: ${parseFloat(data.balance).toFixed(5)} BNB`;
-    }).catch(() => {
-      document.getElementById("balanceResult").innerText = "Failed to fetch balance.";
-    });
+    .then(data => document.getElementById("balanceResult").innerText = `Balance: ${data.balance} BNB`)
+    .catch(() => document.getElementById("balanceResult").innerText = "Failed to fetch balance");
 }
 function uploadMedia() {
   const name = document.getElementById("uploadName").value;
   const caption = document.getElementById("uploadCaption").value;
   const file = document.getElementById("uploadFile").files[0];
-  const token = document.getElementById("uploadToken").value;
-  if (!name || !caption || !file || !token) return alert("All fields are required.");
   const formData = new FormData();
   formData.append("name", name);
   formData.append("caption", caption);
   formData.append("media", file);
   fetch("http://localhost:3000/admin/upload", {
     method: "POST",
-    headers: { "x-admin-token": token },
+    headers: { "x-admin-token": "public-admin-token" },
     body: formData
-  })
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById("uploadStatus").innerText = data.message || "Upload complete.";
+  }).then(res => res.json()).then(data => {
+    document.getElementById("uploadStatus").innerText = data.message || "Uploaded";
     fetchSuccessStories();
-  })
-  .catch(() => {
-    document.getElementById("uploadStatus").innerText = "Upload failed.";
+  });
+}
+function uploadUserMedia() {
+  const name = document.getElementById("userUploadName").value;
+  const caption = document.getElementById("userUploadCaption").value;
+  const file = document.getElementById("userUploadFile").files[0];
+  const formData = new FormData();
+  formData.append("name", name);
+  formData.append("caption", caption);
+  formData.append("media", file);
+  fetch("http://localhost:3000/user/upload", {
+    method: "POST",
+    body: formData
+  }).then(res => res.json()).then(data => {
+    document.getElementById("userUploadStatus").innerText = data.message || "Uploaded";
+    fetchSuccessStories();
   });
 }
 function fetchSuccessStories() {
@@ -156,16 +171,10 @@ function fetchSuccessStories() {
       });
     });
 }
-function hideAll() {
-  ["navigationPage", "registerPage", "loginPage", "tradingRoom", "balancePage", "adminPage"].forEach(id => {
-    document.getElementById(id).classList.add("hidden");
-  });
-}
 setInterval(fetchSuccessStories, 300000);
 fetchSuccessStories();
 fetch("https://ipapi.co/json").then(res => res.json()).then(data => {
   document.getElementById("country").value = data.country_name || "Canada";
 });
-</script>
-</body>
+</script></body>
 </html>
